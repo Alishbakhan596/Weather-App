@@ -1,132 +1,76 @@
-import 'dart:math';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:weather_app/theme_provider.dart';
+import 'package:weather_app/home_service.dart';
 
-class WeatherApp extends StatefulWidget {
-  const WeatherApp({super.key});
+String city = "Karachi";
+String city1 = "";
+List favourite = [];
 
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
   @override
-  State<WeatherApp> createState() => _WeatherAppState();
+  State<Home> createState() => _HomeState();
 }
 
-class _WeatherAppState extends State<WeatherApp> {
+TextEditingController txtcity = TextEditingController();
+
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.more_vert),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Consumer<ThemeProvider>(
-              builder: (context, themeProvider, child) {
-                return Switch(
-                  activeColor: Colors.white,
-                  inactiveThumbColor: Colors.white,
-                  thumbColor: const MaterialStatePropertyAll(Colors.orange),
-                  inactiveTrackColor: Colors.transparent,
-                  thumbIcon: MaterialStatePropertyAll(themeProvider.isSelectd
-                      ? Icon(Icons.nights_stay)
-                      : Icon(Icons.sunny)),
-                  value: themeProvider.isSelectd,
-                  onChanged: (value) {
-                    themeProvider.toggleTheme();
-                  },
-                );
-              },
-            ),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Center(
-            child: Column(
+      body: FutureBuilder(
+        future: getuser(city),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.data == null) {
+            return CircularProgressIndicator();
+          } else {
+            return Column(
               children: [
-                Text(
-                  "Paris",
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
+                ListTile(
+                  leading: Text("${snapshot.data[0].id}"),
+                  title: Text(
+                      "${(snapshot.data[0].temp - 273).toStringAsFixed(0)}"),
                 ),
-                const SizedBox(height: 30),
-                Consumer<ThemeProvider>(
-                  builder: (context, themeProvider, child) {
-                    return Icon(
-                        themeProvider.isSelectd
-                            ? Icons.nights_stay
-                            : Icons.sunny,
-                        size: 250,
-                        color: themeProvider.isSelectd
-                            ? Colors.white
-                            : Colors.orange);
+                TextField(
+                  onSubmitted: (value) {
+                    city1 = value;
+                    setState(() {
+                      if (city1 != "") {
+                        city = city1;
+                      }
+                    });
+                    txtcity.clear();
                   },
+                  controller: txtcity,
                 ),
-                const SizedBox(height: 30),
-                Text(
-                  "20° C",
-                  style: TextStyle(fontSize: 30),
-                ),
-                Text(
-                  "Good Morning",
-                  style: TextStyle(fontSize: 18, color: Colors.grey.shade500),
-                ),
-                Text(
-                  "NOIDA",
-                  style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
-                ),
-                const SizedBox(height: 50),
-                const SizedBox(
-                  width: 50,
-                  child: Divider(
-                    thickness: 3,
-                  ),
-                ),
-                const SizedBox(height: 50),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Icon(Icons.wb_twighlight),
-                        Text("SUNRISE"),
-                        Text("7:00")
-                      ],
-                    ),
-                    SizedBox(
-                      height: 50,
-                      child: VerticalDivider(
-                        color: Colors.black,
-                        thickness: 1,
-                      ),
-                    ),
-                    Column(
-                      children: [Icon(Icons.air), Text("Wind"), Text("4m/s")],
-                    ),
-                    SizedBox(
-                      height: 50,
-                      child: VerticalDivider(
-                        color: Colors.black,
-                        thickness: 1,
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Icon(Icons.thermostat),
-                        Text("Temperature"),
-                        Text("23")
-                      ],
-                    ),
-                  ],
-                )
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (city1 != "") {
+                          city = city1;
+                        }
+                      });
+                      txtcity.clear();
+                    },
+                    child: Text("change")),
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (city1 != "") {
+                          favourite.add(city1);
+                        }
+                      });
+                      txtcity.clear();
+                      print(favourite);
+                    },
+                    child: Text("change"))
               ],
-            ),
-          ),
-        ),
+            );
+          }
+        },
       ),
     );
   }

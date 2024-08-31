@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/Screens/home_screen.dart';
-import 'package:weather_app/firebase_options.dart';
 import 'package:weather_app/home.dart';
-import 'package:weather_app/theme.dart';
-import 'package:weather_app/theme_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:weather_app/weather.dart';
 
 void main() {
-  runApp(MyApp());
-  //ChangeNotifierProvider(
-  //  create: (context) => ThemeProvider(), child: const MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,9 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
-      //home: WeatherApp(),
-      //theme: Provider.of<ThemeProvider>(context).themeData,
+      home: Weather(),
     );
   }
 }
